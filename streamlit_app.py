@@ -51,8 +51,7 @@ def get_commit(sha):
 
 def get_commits(start_date, end_date):
     """Returns all the commits on the given interval."""
-    # payload = {'since': start_date, 'until': end_date}
-    payload = {}
+    payload = {'since': start_date, 'until': end_date}
     commits = get_from_github('repos/streamlit/streamlit/commits', params=payload)
     return commits
 
@@ -79,7 +78,7 @@ def main():
     """Main String."""
 
     # Dipslay the header
-    """# Streamlit Release Notes App"""
+    """# Streamlit Release Notes App (pygithub branch)"""
     tags = get_tags()    
     tag_1 = select_tag('Starting Version', tags)
     tag_2 = select_tag('Ending Version', tags)
