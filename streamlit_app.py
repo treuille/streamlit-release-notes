@@ -51,7 +51,8 @@ def get_commit(sha):
 
 def get_commits(start_date, end_date):
     """Returns all the commits on the given interval."""
-    payload = {'since': start_date, 'until': end_date}
+    # payload = {'since': start_date, 'until': end_date}
+    payload = {}
     commits = get_from_github('repos/streamlit/streamlit/commits', params=payload)
     return commits
 
