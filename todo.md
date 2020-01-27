@@ -1,10 +1,13 @@
 # Streamlit Release Note Apps
 
-## Todo
+## Done
 
 - see if I can parse the versions
 - see if I can cache requests to github
-- see if I can list the pull requests that went into a version
+
+## Todo
+
+- given two versions, how can I figure out the pull requests that went into it
 
 ## Docs
 
