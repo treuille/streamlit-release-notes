@@ -75,7 +75,7 @@ def select_tag(label, tags):
     tags = sorted(tags, key=lambda tag: tag['version'], reverse=True)
     return st.selectbox(label, tags, format_func=lambda tag: tag['name'])
 
-def main():
+def old_main():
     """Main String."""
 
     # Dipslay the header
@@ -105,7 +105,13 @@ def main():
 
     # commit2 = get_commit(tag1['commit']['sha'])
 
+def main():
+    st.write("Let's make a simple app.")
+    x = st.slider('x')
+    f'${x}^2={x*x}$' 
 
+    if st.button('Show Balloons'):
+        st.balloons()
 
     # # for tag in tags:
     # #     version_string = tag['name']

@@ -13,3 +13,4 @@
 
 - <https://developer.github.com/v3/>
 - <https://requests.readthedocs.io/en/master/user/quickstart/>
+- <https://github.com/PyGithub/PyGithub>
