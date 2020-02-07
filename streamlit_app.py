@@ -106,7 +106,7 @@ def old_main():
     # commit2 = get_commit(tag1['commit']['sha'])
 
 def main():
-    st.write("Let's make a simple app.")
+    st.write("# Demo for Jesper")
     x = st.slider('x')
     f'${x}^2={x*x}$' 
 
