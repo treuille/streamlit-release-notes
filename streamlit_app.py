@@ -1,4 +1,5 @@
 import streamlit as st
+import collections
 import github
 
 # # Cached version of requests.get
@@ -64,21 +65,29 @@ import github
 # Utility Functions #
 #####################
 
+@st.cache
+def get_MetaTag_class():
+    return collections.namedtuple('MetaTag', ['name', 'commit'])
+
+# My own tag class
+MetaTag = get_MetaTag_class()
+
 def getter(attribute_name):
     """Returns a function which gets a particular attribute."""
     def attribute_getter(obj):
         return getattr(obj, attribute_name)
     return attribute_getter
 
-# #################
-# # API Functions #
-# #################
-
 GITHUB_HASH_FUNCS = {
     github.MainClass.Github: id,
     github.Repository.Repository: getter('full_name'),
     github.Tag.Tag: getter('name'),
+    MetaTag: getter('name'),
 }
+
+#################
+# API Functions #
+#################
 
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
 def get_github():
@@ -93,7 +102,13 @@ def get_streamlit():
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
 def get_tags():
     """Return all the tags in the github repo."""
+    # Get the tags from github
     tags = list(get_streamlit().get_tags())
+
+    # Get a "meta tag" representing the latest commit to develop
+    latest_commit_on_develop = get_streamlit().get_branch('develop').commit
+    latest_commit_metatag = MetaTag(name='Latest Commit', commit=latest_commit_on_develop)
+    tags.insert(0, latest_commit_metatag)
     return tags
 
 def main():
