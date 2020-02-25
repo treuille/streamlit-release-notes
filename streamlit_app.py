@@ -83,6 +83,7 @@ GITHUB_HASH_FUNCS = {
     github.Repository.Repository: getter('full_name'),
     github.Tag.Tag: getter('name'),
     MetaTag: getter('name'),
+    github.Commit.Commit: getter('sha'),
 }
 
 #################
@@ -118,6 +119,11 @@ def get_tags(streamlit_repo):
     tags.insert(0, latest_commit_metatag)
     return tags
 
+@st.cache(hash_funcs=GITHUB_HASH_FUNCS)
+def get_commits(streamlit_repo):
+    """Return all the commits in a github repo."""
+    return list(streamlit_repo.get_commits())
+
 #################
 # GUI Functions #
 #################
@@ -131,16 +137,6 @@ def main():
     # Credentials
     my_github = get_github_from_credentials()
     streamlit_repo = get_streamlit_repo(my_github)
-    # st.show(my_github)
-    # st.show(dir(my_github))
-
-    # st.cache
-
-    # # Get the tags
-    # # st.show(github.Github())
-    # # st.show(github.Github().get_tags())
-    # st.show(get_streamlit_repo(my_github).get_tags())
-
 
     tags = get_tags(streamlit_repo)
     tag_1 = st.selectbox('Starting Version', tags, format_func=getter('name'))
@@ -148,6 +144,15 @@ def main():
     
     st.text(tag_1)
     st.text(tag_2)
+
+    st.show(get_commits(streamlit_repo))
+    commit = get_commits(streamlit_repo)[0]
+    for field in dir(commit):
+        if field.startswith('_'):
+            continue
+        st.write(field, type(field))
+    st.show(commit.last_modified)
+    st.show(commit.update)
 
     return
 
