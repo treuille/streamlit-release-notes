@@ -89,27 +89,38 @@ GITHUB_HASH_FUNCS = {
 # API Functions #
 #################
 
-@st.cache(hash_funcs=GITHUB_HASH_FUNCS)
-def get_github():
-    """Returns a Github handle."""
-    return github.Github()
+def get_github_from_credentials():
+    """Return a username / password pair for the user."""
+    st.sidebar.markdown('### Github Credentials')
+    username = st.sidebar.text_input('Username')
+    password = st.sidebar.text_input('Password', type='password')
+    get_github = st.cache(func=github.Github, hash_funcs=GITHUB_HASH_FUNCS)
+    if not username or not password:
+        st.sidebar.warning('Please enter Github credentials to skip rate limiting.')
+        return get_github()
+    else:
+        return get_github(username, password)
 
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
-def get_streamlit():
+def get_streamlit_repo(my_github):
     """Return a handle to the Streamlit repo."""
-    return get_github().get_repo('streamlit/streamlit')
+    return my_github.get_repo('streamlit/streamlit')
 
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
-def get_tags():
+def get_tags(streamlit_repo):
     """Return all the tags in the github repo."""
     # Get the tags from github
-    tags = list(get_streamlit().get_tags())
+    tags = list(streamlit_repo.get_tags())
 
     # Get a "meta tag" representing the latest commit to develop
-    latest_commit_on_develop = get_streamlit().get_branch('develop').commit
+    latest_commit_on_develop = streamlit_repo.get_branch('develop').commit
     latest_commit_metatag = MetaTag(name='Latest Commit', commit=latest_commit_on_develop)
     tags.insert(0, latest_commit_metatag)
     return tags
+
+#################
+# GUI Functions #
+#################
 
 def main():
     """Main String."""
@@ -117,14 +128,28 @@ def main():
     # Dipslay the header
     """# Streamlit Release Notes App (pygithub branch)"""
 
-    # Get the tags
-    tags = get_tags()
-    get_tag_name = lambda tag: tag.name
+    # Credentials
+    my_github = get_github_from_credentials()
+    streamlit_repo = get_streamlit_repo(my_github)
+    # st.show(my_github)
+    # st.show(dir(my_github))
+
+    # st.cache
+
+    # # Get the tags
+    # # st.show(github.Github())
+    # # st.show(github.Github().get_tags())
+    # st.show(get_streamlit_repo(my_github).get_tags())
+
+
+    tags = get_tags(streamlit_repo)
     tag_1 = st.selectbox('Starting Version', tags, format_func=getter('name'))
     tag_2 = st.selectbox('Ending Version', tags, format_func=getter('name'))
     
     st.text(tag_1)
     st.text(tag_2)
+
+    return
 
     # # Get the commits.
     # sha_1 = tag_1['commit']['sha']
