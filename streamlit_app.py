@@ -1,7 +1,4 @@
 import streamlit as st
-# import requests
-# import collections
-# import re
 import github
 
 # # Cached version of requests.get
@@ -63,15 +60,15 @@ import github
 #     return commit['sha']
 
 
-# #################
-# # GUI Functions #
-# #################
+#####################
+# Utility Functions #
+#####################
 
-# def select_tag(label, tags):
-#     """Creates a widget that lets the user select a tag from a list."""
-#     # This type lets us sort by version number.
-#     tags = sorted(tags, key=lambda tag: tag['version'], reverse=True)
-#     return st.selectbox(label, tags, format_func=lambda tag: tag['name'])
+def getter(attribute_name):
+    """Returns a function which gets a particular attribute."""
+    def attribute_getter(obj):
+        return getattr(obj, attribute_name)
+    return attribute_getter
 
 # #################
 # # API Functions #
@@ -79,8 +76,8 @@ import github
 
 GITHUB_HASH_FUNCS = {
     github.MainClass.Github: id,
-    github.Repository.Repository: id,
-    github.Tag.Tag: id,
+    github.Repository.Repository: getter('full_name'),
+    github.Tag.Tag: getter('name'),
 }
 
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
@@ -96,28 +93,24 @@ def get_streamlit():
 @st.cache(hash_funcs=GITHUB_HASH_FUNCS)
 def get_tags():
     """Return all the tags in the github repo."""
-    return list(get_streamlit().get_tags())
-    
-    # st.show(paginated_list)
-    # dir(paginated_list),
-    # for i, page in enumerate(paginated_list):
-    #     i, page
+    tags = list(get_streamlit().get_tags())
+    return tags
 
 def main():
     """Main String."""
 
-    "Getting the tags..."
-    tags = get_tags()
-    st.show(dir(tags[0]))
-    for i, tag in enumerate(tags):
-        i, tag.name
+    # Dipslay the header
+    """# Streamlit Release Notes App (pygithub branch)"""
 
-    # # Dipslay the header
-    # """# Streamlit Release Notes App (pygithub branch)"""
-    # tags = get_tags()    
-    # tag_1 = select_tag('Starting Version', tags)
-    # tag_2 = select_tag('Ending Version', tags)
+    # Get the tags
+    tags = get_tags()
+    get_tag_name = lambda tag: tag.name
+    tag_1 = st.selectbox('Starting Version', tags, format_func=getter('name'))
+    tag_2 = st.selectbox('Ending Version', tags, format_func=getter('name'))
     
+    st.text(tag_1)
+    st.text(tag_2)
+
     # # Get the commits.
     # sha_1 = tag_1['commit']['sha']
     # sha_2 = tag_2['commit']['sha']
